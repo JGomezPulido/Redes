@@ -39,7 +39,7 @@ int main(int argc ,char** argv)
     int err = bind(sd,(struct sockaddr *) res->ai_addr, res->ai_addrlen);
 
     if(err == 1){
-        
+
         return -1;
     }
 

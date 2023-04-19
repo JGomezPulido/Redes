@@ -33,6 +33,7 @@ int main(int argc ,char** argv)
     int sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
     if(sd < 0){
+        freeaddrinfo(res);
         std::cout << "Error en la creacion del socket, cerrando el programa... Código de error: " << errno << "\n";
         return -1;
     }
@@ -40,7 +41,8 @@ int main(int argc ,char** argv)
     int err = bind(sd,(struct sockaddr *) res->ai_addr, res->ai_addrlen);
 
     if(err == 1){
-
+        freeaddrinfo(res);
+        close(sd);
         return -1;
     }
 
@@ -58,11 +60,14 @@ int main(int argc ,char** argv)
             cout << "ERROR\n";
             continue;
         }
-
-        if(bytes > 0) buffer[bytes-1] = '\0';
-       
+    
+        if(buffer[bytes-1] == '\n')  buffer[bytes-1] = '\0';
+        else buffer[bytes] = '\0';
+     
         getnameinfo(&cliente, cliente_len, host, NI_MAXHOST, 
             serv, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
+
+        cout << "Recibidos " << bytes << " bytes desde [" << host << ":" << serv << "]\n";
 
         time_t actime;
         time(&actime);
@@ -80,8 +85,10 @@ int main(int argc ,char** argv)
         }else{
             cout << "Comando no soportado " << buffer;
         }
-        cout << response << "\n";
         sendto(sd, response, datelen, 0, &cliente, cliente_len);
+        //free(fecha);
     }
+    freeaddrinfo(res);
     return 0;
 }
+

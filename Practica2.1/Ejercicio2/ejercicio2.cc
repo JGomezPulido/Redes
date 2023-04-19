@@ -5,6 +5,7 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <time.h>
 
 using namespace std;
 int main(int argc ,char** argv)
@@ -44,6 +45,7 @@ int main(int argc ,char** argv)
     }
 
     char buffer[80];
+    char response[80];
     sockaddr cliente;
     socklen_t cliente_len = sizeof(struct sockaddr);
     char host[NI_MAXHOST];
@@ -56,14 +58,30 @@ int main(int argc ,char** argv)
             cout << "ERROR\n";
             continue;
         }
-        buffer[bytes] = '\0';
 
+        if(bytes > 0) buffer[bytes-1] = '\0';
+       
         getnameinfo(&cliente, cliente_len, host, NI_MAXHOST, 
             serv, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
 
-        cout << bytes << " bytes recibidos de [" << host << ":" << serv << "]\n";
+        time_t actime;
+        time(&actime);
+        struct tm* fecha = localtime(&actime);
+        size_t datelen;
 
-        sendto(sd, buffer, bytes, 0, &cliente, cliente_len);
+        if(strcmp(buffer, "t") == 0){
+            datelen = strftime(response, 80, "%F%p", fecha);
+        }else if(strcmp(buffer, "d") == 0){
+            datelen = strftime(response, 80, "%T", fecha);
+        }else if(strcmp(buffer, "q") == 0){
+            close(sd);
+            cout << "Saliendo...\n";
+            break;
+        }else{
+            cout << "Comando no soportado " << buffer;
+        }
+        cout << response << "\n";
+        sendto(sd, response, datelen, 0, &cliente, cliente_len);
     }
     return 0;
 }

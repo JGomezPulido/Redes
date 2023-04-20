@@ -74,9 +74,9 @@ int main(int argc ,char** argv)
         struct tm* fecha = localtime(&actime);
         size_t datelen;
 
-        if(strcmp(buffer, "t") == 0){
+        if(strcmp(buffer, "d") == 0){
             datelen = strftime(response, 80, "%F%p", fecha);
-        }else if(strcmp(buffer, "d") == 0){
+        }else if(strcmp(buffer, "t") == 0){
             datelen = strftime(response, 80, "%T", fecha);
         }else if(strcmp(buffer, "q") == 0){
             close(sd);

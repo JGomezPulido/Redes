@@ -25,3 +25,6 @@ Autores ejercicio 6:
 - Jose Maria Gomez Pulido
 - Javier Villegas
 - Eduardo de Orellana
+
+Autores ejercicio 7:
+- Jose Maria Gomez Pulido

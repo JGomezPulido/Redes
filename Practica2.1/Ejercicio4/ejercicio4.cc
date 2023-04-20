@@ -5,12 +5,13 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <time.h>
 
 using namespace std;
 int main(int argc ,char** argv)
 {
     if(argc < 3){
-        cerr << "No hay argumentos suficientes, especifique dominio o ip y puerto\n";
+        cerr << "No hay argumentos suficientes (" << argc << "), especifique dominio o ip y puerto\n";
         return -1;
     }
 
@@ -29,43 +30,59 @@ int main(int argc ,char** argv)
     }
 
     int sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if(sd < 0) {
-        std::cout << 
-        "Error en la creacion del socket, cerrando el programa... Código de error: " 
-        << errno << "\n";
+
+    if(sd < 0){
+        cout << "Error en la creacion del socket, cerrando el programa... Código de error: " << errno << "\n";
+        freeaddrinfo(res);
         return -1;
     }
 
-    if(bind(sd,(struct sockaddr *) res->ai_addr, res->ai_addrlen) == 1)
-        return -1;
+    int err = bind(sd,(struct sockaddr *) res->ai_addr, res->ai_addrlen);
 
-    if (listen(sd, 5) != 0)
+    if(err == -1){
+        cout << "Error en bind, cerrando el programa... Código de error: " << errno << "\n";
+        freeaddrinfo(res);
+        close(sd);
         return -1;
+    }
 
+    err = listen(sd, 5);
+
+    if(err == -1){
+        cout << "Error en listen, cerrando el programa... Código de error: " << errno << "\n";
+        freeaddrinfo(res);
+        close(sd);
+        return -1;
+    }
     char buffer[80];
-    char response[80];
-    sockaddr client;
-    socklen_t client_len = sizeof(struct sockaddr);
+    
+    sockaddr cliente;
+    socklen_t cliente_len = sizeof(struct sockaddr);
     char host[NI_MAXHOST];
     char serv[NI_MAXSERV];
 
-    while(true) {
-        int client_sd = accept(sd, &client, &client_len);
+    while(true){
+        int cd = accept(sd, &cliente, &cliente_len);
 
-        getnameinfo(&client, client_len, 
-                    host, NI_MAXHOST, 
-                    serv, NI_MAXSERV, 
-                    NI_NUMERICHOST | NI_NUMERICSERV);
+        if(err == -1){
+            cout << "ERROR  \n";
+            continue;
+        }
+     
+        getnameinfo(&cliente, cliente_len, host, NI_MAXHOST, 
+            serv, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
 
-        std::cout << "Conexión desde " << host << serv << std::endl;
+        cout << "Conexión desde " <<  host << ":" << serv << "\n";
+        ssize_t bytes;
+        do{
+            bytes = recv(cd, buffer, 80, 0);
+            if(bytes > 0) buffer[bytes] = '\0';
+            else break;
+            bytes = send(cd, buffer, strlen(buffer), 0); 
+        }while(bytes != -1);
 
-        do {
-            memset(&buffer, 0, 80);
-            auto err = recv(client_sd, buffer, 80, 0);
-            send(client_sd, buffer, 80, 0);
-        } while (true);
-
-        std::cout << "Conexión terminada" << std::endl;
+        cout << "Conexion terminada\n";
+        close(cd);
     }
     return 0;
 }

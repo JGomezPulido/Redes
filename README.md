@@ -20,3 +20,8 @@ Autores ejercicio 4:
 
 Autores ejercicio 5:
 - Jose Maria Gomez Pulido
+
+Autores ejercicio 6:
+- Jose Maria Gomez Pulido
+- Javier Villegas
+- Eduardo de Orellana

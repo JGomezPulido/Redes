@@ -17,3 +17,14 @@ Autores ejercicio 4:
 - Jose Maria Gomez
 - Javier Villegas
 - Eduardo de Orellana
+
+Autores ejercicio 5:
+- Jose Maria Gomez Pulido
+
+Autores ejercicio 6:
+- Jose Maria Gomez Pulido
+- Javier Villegas
+- Eduardo de Orellana
+
+Autores ejercicio 7:
+- Jose Maria Gomez Pulido

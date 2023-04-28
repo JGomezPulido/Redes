@@ -49,6 +49,9 @@ private:
     char name[MAX_NAME];
 };
 
+// El comando od permite abrir los archivos de texto y leerlos como si utilizara caracteres hexadecimales, en octal en ascii, etc
+// La salida del comando si lo mostramos en ascii podemos ver el nombre que le hayamos puesto
+
 int main()
 {
     Player p1 = Player("juan", 10, 30);
@@ -58,7 +61,6 @@ int main()
     int file = open("player.txt", O_CREAT | O_WRONLY, 0666);
     write(file, p1.data(), p1.size());
     close(file);
-    //std::cout << "AAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 
     return 0;
 }

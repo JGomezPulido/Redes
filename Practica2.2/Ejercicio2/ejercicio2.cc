@@ -1,13 +1,39 @@
 #include "../Serializable.h"
+#include <iostream>
+#include <string>
+#include <cstring>
+
+#include "fcntl.h"
+#include <stdio.h>
+#include <unistd.h>
 
 class Player : public Serializable
 {
 public:
 
-    Player(const char* name, int16_t x, int16_t y);
-    ~Player();
+    Player(const char * _n, int16_t _x, int16_t _y):Serializable(), pos_x(_x),pos_y(_y)
+    {
+        strncpy(name, _n, MAX_NAME);
+    };
+    ~Player()
+    {
+        //delete name;
+    };
 
     void to_bin() override {
+
+        int totalSize = sizeof(int16_t) * 2 + sizeof(char) * MAX_NAME;
+        alloc_data(totalSize);
+
+        char* data_copy = _data;
+
+        memcpy(data_copy, &pos_x, sizeof(int16_t));
+        data_copy += sizeof(int16_t);
+
+        memcpy(data_copy, &pos_y, sizeof(int16_t));
+        data_copy += sizeof(int16_t);
+
+        memcpy(data_copy, name, sizeof(char) * MAX_NAME);
 
     };
     int from_bin(char * data) override {
@@ -23,7 +49,16 @@ private:
     char name[MAX_NAME];
 };
 
-void main()
+int main()
 {
+    Player p1 = Player("juan", 10, 30);
 
+    p1.to_bin();
+
+    int file = open("player.txt", O_CREAT | O_WRONLY, 0666);
+    write(file, p1.data(), p1.size());
+    close(file);
+    //std::cout << "AAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+
+    return 0;
 }

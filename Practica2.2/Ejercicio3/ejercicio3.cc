@@ -52,6 +52,16 @@ public:
     {
         return pos_x;
     }
+
+    int16_t getY()
+    {
+        return pos_y;
+    }
+
+    const char* getName()
+    {
+        return name;
+    }
     
 private:
     static const size_t MAX_NAME = 20;
@@ -67,22 +77,22 @@ private:
 
 int main()
 {
-    Player p1 = Player("juan", 10, 30);
+    Player p1 = Player("juan", 200, 30);
 
     p1.to_bin();
 
     char* buf = new char[p1.size()];
 
-    int file = open("player.txt", O_CREAT | O_WRONLY, 0666);
+    int file = open("player", O_CREAT | O_RDWR | O_TRUNC, S_IWUSR | S_IRUSR);
     write(file, p1.data(), p1.size());
-
+    lseek(file, 0, SEEK_SET);
     read(file, buf, p1.size());
     close(file);
 
     Player result = Player("", 0, 0);
     result.from_bin(buf);
 
-    std::cout << result.getX();
+    std::cout << result.getName() << " " << result.getX() << " " << result.getY() << "\n";
 
     return 0;
 }
